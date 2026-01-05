@@ -100,6 +100,8 @@ class PaymentService {
 }
 ```
 
+Key idea: You extend behavior by adding new code, not by changing tested code.
+
 ## Liskov Substitution Principle (LSP)
 
 Objects of a superclass should be **replaceable with objects of its subclasses** without breaking the correctness of the program.
@@ -154,3 +156,58 @@ function printBonus(employee: Employee) {
 Clients should not be forced to depend on interfaces they **do not use**.
 
 In simple terms: Prefer **small, specific interfaces** over large, general-purpose ones.
+
+**Scenario:**  
+Different employees have different responsibilities in a company system.
+
+❌ Violating ISP
+```TS
+interface Employee {
+  work(): void;
+  manage(): void;
+  writeCode(): void;
+}
+
+class Developer implements Employee {
+  work() {}
+  manage() {
+    throw new Error('Developers do not manage');
+  }
+  writeCode() {}
+}
+
+class Manager implements Employee {
+  work() {}
+  manage() {}
+  writeCode() {
+    throw new Error('Managers do not write code');
+  }
+}
+```
+
+✅ Following ISP
+```TS
+interface Worker {
+  work(): void;
+}
+
+interface ManagerRole {
+  manage(): void;
+}
+
+interface DeveloperRole {
+  writeCode(): void;
+}
+
+class Developer implements Worker, DeveloperRole {
+  work() {}
+  writeCode() {}
+}
+
+class Manager implements Worker, ManagerRole {
+  work() {}
+  manage() {}
+}
+```
+
+Key idea: Many small interfaces are better than one “fat” interface.
