@@ -6,7 +6,7 @@ SOLID is a set of five software design principles that help create code that is 
 - **O — Open / Closed Principle (OCP)**
 - **L — Liskov Substitution Principle (LSP)**
 - **I — Interface Segregation Principle (ISP)**
-- **D — Dependency Inversion Principle**
+- **D — Dependency Inversion Principle (DIP)**
 
 ## Single Responsibility Principle (SRP)
 A module, class, or function should have only one task or responsibility.
@@ -211,3 +211,55 @@ class Manager implements Worker, ManagerRole {
 ```
 
 Key idea: Many small interfaces are better than one “fat” interface.
+
+## Dependency Inversion Principle (DIP)
+
+High-level modules should **not depend on low-level modules**.  
+Both should depend on **abstractions**.
+
+**Scenario:**  
+An application sends notifications to users.
+
+❌ Violating DIP
+```TS
+class EmailService {
+  send(message: string) {
+    console.log(`Email sent: ${message}`);
+  }
+}
+
+class NotificationService {
+  private emailService = new EmailService();
+
+  notify(message: string) {
+    this.emailService.send(message);
+  }
+}
+```
+
+✅ Following DIP
+```TS
+interface MessageSender {
+  send(message: string): void;
+}
+
+class EmailService implements MessageSender {
+  send(message: string) {
+    console.log(`Email sent: ${message}`);
+  }
+}
+
+class SmsService implements MessageSender {
+  send(message: string) {
+    console.log(`SMS sent: ${message}`);
+  }
+}
+
+class NotificationService {
+  constructor(private sender: MessageSender) {}
+
+  notify(message: string) {
+    this.sender.send(message);
+  }
+}
+```
